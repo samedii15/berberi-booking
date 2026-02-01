@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menaxho Rezervimin - Berberi</title>
+    <meta name="description" content="Ndrysho ose anulo rezervimin tënd me kodin e rezervimit.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="kodi.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <div class="header-content">
+                    <a href="/" class="back-btn">
+                        ← Kthehu
+                    </a>
+                    <h1 class="page-title">Menaxho Rezervimin</h1>
+                    <div class="header-space"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <!-- Code Entry Section -->
+            <section id="code-entry-section" class="code-entry-section">
+                <div class="container">
+                    <div class="code-entry-card">
+                        <div class="code-entry-header">
+                            <h2>🔑 Fut Kodin e Rezervimit</h2>
+                            <p>Shkruaj kodin 6-shifror që u dha pas rezervimit</p>
+                        </div>
+
+                        <form id="code-form" class="code-form">
+                            <div class="form-group">
+                                <label for="reservation-code">Kodi i Rezervimit</label>
+                                <input 
+                                    type="text" 
+                                    id="reservation-code" 
+                                    name="code" 
+                                    placeholder="p.sh. A7F3K9"
+                                    maxlength="6"
+                                    pattern="[A-Z0-9]{6}"
+                                    autocomplete="off"
+                                    required
+                                >
+                                <div class="input-hint">6 karaktere (shkronja dhe numra)</div>
+                            </div>
+                            
+                            <div id="code-message" class="code-message"></div>
+                            
+                            <button type="submit" class="btn-primary" id="code-submit">
+                                <span class="btn-text">Gjej Rezervimin</span>
+                            </button>
+                        </form>
+
+                        <div class="code-help">
+                            <h4>Nuk e gjen kodin?</h4>
+                            <p>Kodi i rezervimit u dha pas rezervimit. Nëse nuk e ke ruajtur, kontakto berberin direkt.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reservation Details Section -->
+            <section id="reservation-section" class="reservation-section" style="display: none;">
+                <div class="container">
+                    <div class="reservation-card">
+                        <div class="reservation-header">
+                            <h2>📅 Rezervimi Juaj</h2>
+                            <div class="reservation-code-display">
+                                <span>Kodi: </span>
+                                <strong id="display-code">-</strong>
+                            </div>
+                        </div>
+
+                        <div class="reservation-details">
+                            <div class="detail-item">
+                                <div class="detail-label">Emri:</div>
+                                <div class="detail-value" id="detail-name">-</div>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <div class="detail-label">Data:</div>
+                                <div class="detail-value" id="detail-date">-</div>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <div class="detail-label">Ora:</div>
+                                <div class="detail-value" id="detail-time">-</div>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <div class="detail-label">Ditë:</div>
+                                <div class="detail-value" id="detail-day">-</div>
+                            </div>
+                        </div>
+
+                        <div class="reservation-actions">
+                            <button class="btn-secondary" onclick="showChangeModal()">
+                                ✏️ Ndrysho
+                            </button>
+                            <button class="btn-danger" onclick="showCancelModal()">
+                                ❌ Anulo
+                            </button>
+                        </div>
+
+                        <div class="reservation-footer">
+                            <button class="btn-text" onclick="searchAnother()">
+                                🔍 Kërko rezervim tjetër
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Change Reservation Modal -->
+        <div id="change-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>✏️ Ndrysho Rezervimin</h3>
+                    <button class="modal-close" onclick="closeChangeModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="current-reservation">
+                        <h4>Rezervimi aktual:</h4>
+                        <div class="current-info">
+                            <span id="current-display">-</span>
+                        </div>
+                    </div>
+                    
+                    <div class="change-form">
+                        <h4>Zgjidh slot të ri:</h4>
+                        <div id="change-message" class="change-message"></div>
+                        
+                        <div id="change-loading" class="change-loading">
+                            <div class="spinner"></div>
+                            <span>Duke ngarkuar slot-et...</span>
+                        </div>
+                        
+                        <div id="change-days" class="change-days" style="display: none;">
+                            <!-- Days will be populated by JavaScript -->
+                        </div>
+                        
+                        <div id="change-slots" class="change-slots" style="display: none;">
+                            <!-- Slots will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" onclick="closeChangeModal()">
+                            Anulo
+                        </button>
+                        <button type="button" class="btn-primary" id="confirm-change" onclick="confirmChange()" disabled>
+                            Konfirmo Ndryshimin
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cancel Confirmation Modal -->
+        <div id="cancel-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>❌ Anulo Rezervimin</h3>
+                    <button class="modal-close" onclick="closeCancelModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="cancel-warning">
+                        <div class="warning-icon">⚠️</div>
+                        <h4>Je i sigurt që dëshiron ta anulosh?</h4>
+                        <p>Ky veprim nuk mund të zhbëhet. Rezervimi do të fshihet përgjithmonë.</p>
+                    </div>
+                    
+                    <div class="cancel-details">
+                        <strong>Rezervimi që do të anulohet:</strong>
+                        <div class="cancel-info">
+                            <span id="cancel-display">-</span>
+                        </div>
+                    </div>
+                    
+                    <div id="cancel-message" class="cancel-message"></div>
+                    
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" onclick="closeCancelModal()">
+                            Mbaj Rezervimin
+                        </button>
+                        <button type="button" class="btn-danger" id="confirm-cancel" onclick="confirmCancel()">
+                            Po, Anuloje
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Modal -->
+        <div id="success-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="success-title">✅ Sukses!</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="success-content">
+                        <div id="success-message" class="success-message">
+                            Operacioni u krye me sukses!
+                        </div>
+                        
+                        <div id="success-details" class="success-details">
+                            <!-- Details will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button class="btn-secondary" onclick="window.location.href='/'">
+                            Kryefaqja
+                        </button>
+                        <button class="btn-primary" onclick="window.location.reload()">
+                            Kërko Tjetër
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-brand">
+                        <h4>✂️ Berberi</h4>
+                        <p>Rezervim online i thjeshtë</p>
+                    </div>
+                    <div class="footer-links">
+                        <a href="/">Kryefaqja</a>
+                        <a href="/rezervime">Rezervo</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+    <script src="kodi.js"></script>
+</body>
+</html>

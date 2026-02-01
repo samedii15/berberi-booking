@@ -1,0 +1,609 @@
+/* Rezervime Page Specific Styles */
+
+/* Header Overrides */
+.header .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.back-btn {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+.back-btn:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+.page-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.header-space {
+    width: 80px; /* Same as back button to center title */
+}
+
+/* Loading Section */
+.loading-section {
+    padding: 4rem 0;
+    text-align: center;
+}
+
+.loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.spinner-large {
+    border: 3px solid #e2e8f0;
+    border-top: 3px solid #667eea;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+/* Week Info */
+.week-info {
+    padding: 2rem 0;
+    background: white;
+}
+
+.week-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.week-title h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.week-title p {
+    opacity: 0.9;
+    font-size: 1rem;
+}
+
+.week-stats {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* Days Section */
+.days-section {
+    padding: 1.5rem 0;
+    background: #f7fafc;
+}
+
+.days-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.days-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.days-container {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    min-width: max-content;
+}
+
+.day-card {
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    min-width: 80px;
+    flex-shrink: 0;
+}
+
+.day-card:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.day-card.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.day-card.today {
+    border-color: #48bb78;
+}
+
+.day-card.today:not(.active) {
+    background: #f0fff4;
+    border-color: #48bb78;
+}
+
+.day-name {
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.day-number {
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.day-month {
+    font-size: 0.75rem;
+    opacity: 0.8;
+    margin-top: 0.25rem;
+}
+
+/* Slots Section */
+.slots-section {
+    padding: 2rem 0 4rem;
+    background: white;
+    min-height: 400px;
+}
+
+.slots-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.slots-header h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #1a202c;
+    margin-bottom: 0.25rem;
+}
+
+.slots-header p {
+    color: #4a5568;
+    font-size: 0.95rem;
+}
+
+.slots-container {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.no-day-selected {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #a0aec0;
+}
+
+.no-day-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.no-day-selected h4 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #4a5568;
+    margin-bottom: 0.5rem;
+}
+
+.slot-card {
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.slot-card.available:hover {
+    border-color: #48bb78;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(72, 187, 120, 0.15);
+}
+
+.slot-card.occupied {
+    background: #f7fafc;
+    border-color: #cbd5e0;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.slot-time {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1a202c;
+}
+
+.slot-status {
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+}
+
+.slot-status.available {
+    background: #c6f6d5;
+    color: #2f855a;
+}
+
+.slot-status.occupied {
+    background: #fed7d7;
+    color: #c53030;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 400px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.modal-header {
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #1a202c;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #a0aec0;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+    background: #f7fafc;
+    color: #4a5568;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+/* Booking Details */
+.booking-details {
+    background: #f7fafc;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.booking-detail {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    color: #4a5568;
+}
+
+.booking-detail:last-child {
+    margin-bottom: 0;
+}
+
+.booking-detail strong {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #1a202c;
+    margin-bottom: 0.25rem;
+}
+
+.booking-detail.time {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    margin-bottom: 0;
+    font-weight: 600;
+}
+
+/* Form Styles */
+.booking-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 500;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.form-group input {
+    padding: 0.75rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group input.error {
+    border-color: #f56565;
+}
+
+.input-hint {
+    font-size: 0.8rem;
+    color: #a0aec0;
+    margin-top: 0.25rem;
+}
+
+.booking-message {
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    display: none;
+}
+
+.booking-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-secondary {
+    background: #edf2f7;
+    color: #4a5568;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+}
+
+.btn-secondary:hover {
+    background: #e2e8f0;
+}
+
+.btn-primary {
+    flex: 2;
+}
+
+/* Success Modal */
+.success-content {
+    text-align: center;
+}
+
+.success-details {
+    margin-bottom: 2rem;
+}
+
+.success-details h4 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #2d3748;
+    margin-bottom: 1rem;
+}
+
+.success-info {
+    background: #f0fff4;
+    border: 1px solid #c6f6d5;
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.success-detail {
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+    color: #2d3748;
+}
+
+.success-detail:last-child {
+    margin-bottom: 0;
+}
+
+.success-detail strong {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #1a202c;
+    margin-bottom: 0.25rem;
+}
+
+.success-detail.time {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    color: white;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    margin-bottom: 0;
+    font-weight: 600;
+}
+
+/* Reservation Code */
+.reservation-code {
+    margin-bottom: 2rem;
+}
+
+.reservation-code h4 {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #2d3748;
+    margin-bottom: 1rem;
+}
+
+.code-display {
+    background: #1a202c;
+    color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.copy-code {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s ease;
+}
+
+.copy-code:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+.code-hint {
+    font-size: 0.85rem;
+    color: #a0aec0;
+    text-align: center;
+}
+
+.success-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Responsive */
+@media (min-width: 480px) {
+    .week-stats {
+        gap: 4rem;
+    }
+    
+    .days-container {
+        gap: 1rem;
+    }
+    
+    .day-card {
+        min-width: 90px;
+        padding: 1.25rem 1.5rem;
+    }
+    
+    .slots-container {
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .modal-content {
+        max-width: 500px;
+    }
+    
+    .slots-container {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+    
+    .week-card {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        text-align: left;
+    }
+    
+    .week-stats {
+        gap: 2rem;
+    }
+}

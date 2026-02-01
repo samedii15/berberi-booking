@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Berberi</title>
+    <meta name="description" content="Panel administrativ për menaxhimin e rezervimeve të berberit.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <div class="header-content">
+                    <a href="/" class="back-btn" style="display: none;" id="back-btn">
+                        ← Kthehu
+                    </a>
+                    <h1 class="page-title">👨‍💼 Admin Panel</h1>
+                    <button class="logout-btn" onclick="logout()" style="display: none;" id="logout-btn">
+                        Dil
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Login Section -->
+        <section id="login-section" class="login-section">
+            <div class="container">
+                <div class="login-card">
+                    <div class="login-header">
+                        <h2>🔐 Hyrje Administrative</h2>
+                        <p>Vetëm për administratorët e autorizuar</p>
+                    </div>
+
+                    <form id="login-form" class="login-form">
+                        <div class="form-group">
+                            <label for="username">Emri i përdoruesit</label>
+                            <input 
+                                type="text" 
+                                id="username" 
+                                name="username" 
+                                placeholder="Shkruaj emrin e përdoruesit"
+                                autocomplete="username"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Fjalëkalimi</label>
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="password" 
+                                placeholder="Shkruaj fjalëkalimin"
+                                autocomplete="current-password"
+                                required
+                            >
+                        </div>
+                        
+                        <div id="login-message" class="login-message"></div>
+                        
+                        <button type="submit" class="btn-primary" id="login-submit">
+                            <span class="btn-text">Hyr</span>
+                        </button>
+                    </form>
+
+                    <div class="login-help">
+                        <p><strong>Demo Credentials:</strong></p>
+                        <p>Username: <code>admin</code></p>
+                        <p>Password: <code>admin123</code></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard-section" class="dashboard-section" style="display: none;">
+            <div class="container">
+                
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📅</div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="total-reservations">-</div>
+                            <div class="stat-label">Rezervime Totale</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="active-reservations">-</div>
+                            <div class="stat-label">Aktive</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="occupancy-rate">-</div>
+                            <div class="stat-label">Zënien %</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Week Info -->
+                <div class="week-info-admin">
+                    <h2 id="week-title-admin">Java Aktuale</h2>
+                    <p id="week-subtitle-admin">Rezervimet e javës</p>
+                    <button class="btn-secondary" onclick="loadReservations()">
+                        🔄 Rifresko
+                    </button>
+                </div>
+
+                <!-- Reservations by Day -->
+                <div id="reservations-container" class="reservations-container">
+                    <!-- Content will be populated by JavaScript -->
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Loading State -->
+        <div id="loading-dashboard" class="loading-section" style="display: none;">
+            <div class="container">
+                <div class="loading-content">
+                    <div class="spinner-large"></div>
+                    <p>Duke ngarkuar rezervimet...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cancel Confirmation Modal -->
+        <div id="admin-cancel-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>❌ Anulo Rezervim (Admin)</h3>
+                    <button class="modal-close" id="admin-modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="admin-cancel-warning">
+                        <div class="warning-icon">⚠️</div>
+                        <h4>Dëshiron ta anulosh këtë rezervim?</h4>
+                        <p>Ky veprim do të anulojë rezervimin e klientit pa njoftim automatik.</p>
+                    </div>
+                    
+                    <div class="admin-cancel-details">
+                        <strong>Rezervimi:</strong>
+                        <div id="admin-cancel-info" class="admin-cancel-info">-</div>
+                    </div>
+                    
+                    <div id="admin-cancel-message" class="admin-cancel-message"></div>
+                    
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" id="cancel-cancel-btn">
+                            Mbaj
+                        </button>
+                        <button type="button" class="btn-danger" id="admin-confirm-cancel">
+                            Anulo Rezervimin
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-brand">
+                        <h4>✂️ Berberi</h4>
+                        <p>Panel administrativ</p>
+                    </div>
+                    <div class="footer-links">
+                        <a href="/">Kryefaqja</a>
+                        <a href="/rezervime">Rezervo</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

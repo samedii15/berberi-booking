@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rezervo Termin - Berberi</title>
+    <meta name="description" content="Zgjidh orën dhe daten për rezervimin tënd. I thjeshtë dhe pa regjistrim.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="rezervime.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <div class="header-content">
+                    <a href="/" class="back-btn">
+                        ← Kthehu
+                    </a>
+                    <h1 class="page-title">Rezervo Termin</h1>
+                    <div class="header-space"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Loading State -->
+        <div id="loading" class="loading-section">
+            <div class="container">
+                <div class="loading-content">
+                    <div class="spinner-large"></div>
+                    <p>Duke ngarkuar kalendarin...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main id="main-content" class="main-content" style="display: none;">
+            
+            <!-- Week Info -->
+            <section class="week-info">
+                <div class="container">
+                    <div class="week-card">
+                        <div class="week-title">
+                            <h2 id="week-title">Java Aktuale</h2>
+                            <p id="week-subtitle">Zgjidh ditën dhe orën</p>
+                        </div>
+                        <div class="week-stats">
+                            <div class="stat">
+                                <span class="stat-number" id="available-count">-</span>
+                                <span class="stat-label">Të lira</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-number" id="reserved-count">-</span>
+                                <span class="stat-label">Të zëna</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Days Navigation -->
+            <section class="days-section">
+                <div class="container">
+                    <div class="days-scroll">
+                        <div id="days-container" class="days-container">
+                            <!-- Days will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Time Slots -->
+            <section class="slots-section">
+                <div class="container">
+                    <div class="slots-header">
+                        <h3 id="selected-day-title">Zgjidh një ditë</h3>
+                        <p id="selected-day-subtitle">Slot-et e disponueshme</p>
+                    </div>
+                    <div id="slots-container" class="slots-container">
+                        <div class="no-day-selected">
+                            <div class="no-day-icon">📅</div>
+                            <h4>Zgjidh një ditë</h4>
+                            <p>Kliko në një nga ditët për të parë slot-et e disponueshme</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Booking Modal -->
+        <div id="booking-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Rezervo Termin</h3>
+                    <button class="modal-close" id="booking-modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="booking-details">
+                        <div class="booking-detail">
+                            <strong id="booking-day">-</strong>
+                        </div>
+                        <div class="booking-detail">
+                            <span id="booking-date">-</span>
+                        </div>
+                        <div class="booking-detail time">
+                            <span id="booking-time">-</span>
+                        </div>
+                    </div>
+                    
+                    <form id="booking-form" class="booking-form">
+                        <div class="form-group">
+                            <label for="full-name">Emri dhe Mbiemri</label>
+                            <input 
+                                type="text" 
+                                id="full-name" 
+                                name="full_name" 
+                                placeholder="Shkruaj emrin dhe mbiemrin tënd"
+                                maxlength="50"
+                                required
+                            >
+                            <div class="input-hint">Minimum 2 karaktere</div>
+                        </div>
+                        
+                        <div id="booking-message" class="booking-message"></div>
+                        
+                        <div class="booking-actions">
+                            <button type="button" class="btn-secondary" id="booking-cancel">
+                                Anulo
+                            </button>
+                            <button type="submit" class="btn-primary" id="booking-submit">
+                                <span class="btn-text">Rezervo</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Modal -->
+        <div id="success-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>✅ Rezervimi i Suksesshëm!</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="success-content">
+                        <div class="success-details">
+                            <h4>Termini juaj u rezervua:</h4>
+                            <div class="success-info">
+                                <div class="success-detail">
+                                    <strong id="success-name">-</strong>
+                                </div>
+                                <div class="success-detail">
+                                    <span id="success-day">-</span>
+                                </div>
+                                <div class="success-detail">
+                                    <span id="success-date">-</span>
+                                </div>
+                                <div class="success-detail time">
+                                    <span id="success-time">-</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="reservation-code">
+                            <h4>Kodi juaj i rezervimit:</h4>
+                            <div class="code-display">
+                                <span id="reservation-code">-</span>
+                                <button class="copy-code" onclick="copyCode()" title="Kopjo kodin">
+                                    📋
+                                </button>
+                            </div>
+                            <p class="code-hint">
+                                Ruani këtë kod për të ndryshuar ose anuluar rezervimin
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="success-actions">
+                        <button class="btn-secondary" onclick="window.location.href='/kodi'">
+                            Menaxho Rezervimin
+                        </button>
+                        <button class="btn-primary" onclick="window.location.reload()">
+                            Rezervo Tjetër
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-brand">
+                        <h4>✂️ Berberi</h4>
+                        <p>Rezervim online i thjeshtë</p>
+                    </div>
+                    <div class="footer-links">
+                        <a href="/">Kryefaqja</a>
+                        <a href="/kodi">Menaxho</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+    <script src="rezervime.js"></script>
+</body>
+</html>
