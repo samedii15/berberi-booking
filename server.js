@@ -5,6 +5,11 @@ const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const moment = require('moment');
 
+// Use PostgreSQL if DATABASE_URL is set, otherwise SQLite
+const database = process.env.DATABASE_URL 
+  ? require('./database/db-pg')
+  : require('./database/db');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -80,7 +85,6 @@ const bookingRoutes = require('./routes/booking');
 const codeRoutes = require('./routes/codes');
 const adminRoutes = require('./routes/admin');
 const cleanupService = require('./services/cleanup');
-const database = require('./database/db');
 
 // Initialize database then start cleanup service
 async function initializeServer() {
