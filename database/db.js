@@ -9,16 +9,17 @@ class Database {
 
   init() {
     return new Promise((resolve, reject) => {
-      // Use /opt/render/project/src for Render, or local path for development
-      const dbDir = process.env.RENDER ? '/opt/render/project/src' : path.join(__dirname, '..');
-      const dbPath = path.join(dbDir, 'database.sqlite');
+      // Use current directory for local, /tmp for cloud (writable on Render)
+      const dbPath = process.env.RENDER ? '/tmp/database.sqlite' : path.join(__dirname, '..', 'database.sqlite');
+      
+      console.log('📂 Database path:', dbPath);
       
       this.db = new sqlite3.Database(dbPath, (err) => {
         if (err) {
           console.error('Gabim gjatë lidhjes me databazën:', err.message);
           reject(err);
         } else {
-          console.log('✅ Databaza e lidhur me sukses:', dbPath);
+          console.log('✅ Databaza e lidhur me sukses');
           this.createTables().then(resolve).catch(reject);
         }
       });
