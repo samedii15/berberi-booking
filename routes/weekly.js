@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const cleanupService = require('../services/cleanup');
-const database = require('../database/db');
+const database = process.env.DATABASE_URL 
+  ? require('../database/db-pg')
+  : require('../database/db');
 
 // GET /api/java - Kthen javën aktuale me slot-e dhe rezervime
 router.get('/java', async (req, res) => {

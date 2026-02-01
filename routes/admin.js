@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
-const database = require('../database/db');
+const database = process.env.DATABASE_URL 
+  ? require('../database/db-pg')
+  : require('../database/db');
 const cleanupService = require('../services/cleanup');
 
 // POST /api/admin/hyrje - Admin login
