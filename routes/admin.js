@@ -41,6 +41,8 @@ router.post('/hyrje', async (req, res) => {
   try {
     const { username, password } = req.body;
 
+    console.log('Login attempt for username:', username);
+
     if (!username || !password) {
       return res.status(400).json({
         success: false,
@@ -50,23 +52,29 @@ router.post('/hyrje', async (req, res) => {
 
     const admin = await database.getAdminByUsername(username.trim());
     if (!admin) {
+      console.log('Admin user not found:', username);
       return res.status(401).json({
         success: false,
         error: 'Emri i përdoruesit ose fjalëkalimi është i gabuar.'
       });
     }
 
+    console.log('Admin user found, verifying password...');
     const isPasswordValid = await bcrypt.compare(password, admin.password_hash);
     if (!isPasswordValid) {
+      console.log('Invalid password for user:', username);
       return res.status(401).json({
         success: false,
         error: 'Emri i përdoruesit ose fjalëkalimi është i gabuar.'
       });
     }
 
+    console.log('Password valid, creating session...');
     // Set session
     req.session.adminId = admin.id;
     req.session.username = admin.username;
+
+    console.log('Session created for admin:', admin.username);
 
     res.json({
       success: true,
