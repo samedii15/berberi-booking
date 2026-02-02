@@ -184,13 +184,23 @@ class Database {
     }
     
     return new Promise((resolve, reject) => {
+      const moment = require('moment-timezone');
+      const now = moment();
+      const currentDate = now.format('YYYY-MM-DD');
+      const currentTime = now.format('HH:mm');
+      
       const sql = `
         SELECT * FROM reservations 
-        WHERE date BETWEEN ? AND ? AND status = 'active'
+        WHERE date BETWEEN ? AND ? 
+        AND status = 'active'
+        AND (
+          date > ? 
+          OR (date = ? AND end_time > ?)
+        )
         ORDER BY date, start_time
       `;
 
-      this.db.all(sql, [startDate, endDate], (err, rows) => {
+      this.db.all(sql, [startDate, endDate, currentDate, currentDate, currentTime], (err, rows) => {
         if (err) {
           reject(err);
         } else {

@@ -102,9 +102,21 @@ class DatabasePG {
   }
 
   async getWeekReservations(startDate, endDate) {
+    const moment = require('moment-timezone');
+    const now = moment();
+    const currentDate = now.format('YYYY-MM-DD');
+    const currentTime = now.format('HH:mm');
+    
     const result = await this.pool.query(
-      'SELECT * FROM reservations WHERE date BETWEEN $1 AND $2 AND status = $3 ORDER BY date, start_time',
-      [startDate, endDate, 'active']
+      `SELECT * FROM reservations 
+       WHERE date BETWEEN $1 AND $2 
+       AND status = $3
+       AND (
+         date > $4 
+         OR (date = $4 AND end_time > $5)
+       )
+       ORDER BY date, start_time`,
+      [startDate, endDate, 'active', currentDate, currentTime]
     );
     return result.rows;
   }
