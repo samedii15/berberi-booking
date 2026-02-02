@@ -371,6 +371,8 @@
     justify-content: center;
     border-radius: 50%;
     transition: all 0.3s ease;
+    position: relative;
+    z-index: 10;
 }
 
 .modal-close:hover {

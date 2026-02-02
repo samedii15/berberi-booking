@@ -44,6 +44,20 @@ function setupModalHandlers() {
                 closeSuccessModal();
             }
         });
+        
+        // Success modal close button - using ID for better targeting
+        const successCloseBtn = document.getElementById('success-modal-close');
+        if (successCloseBtn) {
+            console.log('Close button found, attaching listener');
+            successCloseBtn.addEventListener('click', function(e) {
+                console.log('Close button clicked!');
+                e.preventDefault();
+                e.stopPropagation();
+                closeSuccessModal();
+            });
+        } else {
+            console.error('Success modal close button not found!');
+        }
     }
     
     // Booking modal backdrop click
@@ -405,11 +419,14 @@ function showSuccessModal(reservation) {
 }
 
 function closeSuccessModal() {
+    console.log('closeSuccessModal called');
     const modal = document.getElementById('success-modal');
-    modal.classList.remove('active');
-    setTimeout(() => {
-        modal.style.display = 'none';
-    }, 300);
+    if (modal) {
+        modal.classList.remove('active');
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 300);
+    }
 }
 
 function copyCode() {
