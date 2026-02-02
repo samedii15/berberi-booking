@@ -58,7 +58,13 @@ class DatabasePG {
 
   async createDefaultAdmin() {
     const username = 'admin';
-    const password = 'admin123';
+    // Use environment variable or fail if not in development
+    const password = process.env.ADMIN_PASSWORD || (process.env.NODE_ENV === 'production' ? null : 'admin123');
+    
+    if (!password) {
+      console.error('⚠️  ADMIN_PASSWORD environment variable must be set in production!');
+      throw new Error('ADMIN_PASSWORD not configured');
+    }
 
     const result = await this.pool.query(
       'SELECT id FROM admin_users WHERE username = $1',
@@ -71,7 +77,7 @@ class DatabasePG {
         'INSERT INTO admin_users (username, password_hash) VALUES ($1, $2)',
         [username, hash]
       );
-      console.log('👨‍💼 Default admin created: admin/admin123');
+      console.log('👨‍💼 Admin user created successfully');
     }
   }
 

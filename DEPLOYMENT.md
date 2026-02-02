@@ -292,7 +292,7 @@ pm2 restart berberi
 - [ ] Aplikacioni hapet në browser
 - [ ] Rezervimi funksionon
 - [ ] Kodi i rezervimit funksionon
-- [ ] Admin panel hapet (admin/admin123)
+- [ ] Admin panel hapet (set ADMIN_PASSWORD env var)
 - [ ] Database krijon rezervime
 - [ ] Cleanup automatik po funksionon
 - [ ] SSL/HTTPS aktivizuar

@@ -6,11 +6,11 @@ async function initializeDatabase() {
     await database.init();
     console.log('✅ Databaza u inicializua me sukses!');
     console.log('');
-    console.log('ℹ️  Të dhënat e admin-it të paracaktuar:');
+    console.log('ℹ️  Admin user configuration:');
     console.log('   Username: admin');
-    console.log('   Password: admin123');
+    console.log('   Password: Set via ADMIN_PASSWORD environment variable');
     console.log('');
-    console.log('⚠️  RËNDËSISHME: Ndryshoni fjalëkalimin e admin-it pas deployment-it!');
+    console.log('⚠️  IMPORTANT: Set a strong ADMIN_PASSWORD in production!');
     process.exit(0);
   } catch (error) {
     console.error('❌ Gabim gjatë inicializimit të databazës:', error);
