@@ -66,7 +66,7 @@ if (passed === checks) {
   console.log('1. Make sure the server is running: npm start');
   console.log('2. Open http://localhost:3000 in your browser');
   console.log('3. Test booking: click "Caktoni Terminin"');
-  console.log('4. Test admin panel: go to /admin (admin/admin123)');
+  console.log('4. Test admin panel: go to /admin (use ADMIN_PASSWORD env var)');
   console.log('5. Test code management: go to /kodi');
 } else {
   console.log('\n⚠️  Some files are missing. Check the output above.');

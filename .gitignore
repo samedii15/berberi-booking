@@ -5,7 +5,9 @@ yarn-debug.log*
 yarn-error.log*
 
 # Database (for development - in production this should be persistent)
-# database.sqlite
+database.sqlite
+*.sqlite
+*.sqlite3
 
 # Environment variables
 .env

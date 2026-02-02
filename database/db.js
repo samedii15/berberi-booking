@@ -78,7 +78,14 @@ class Database {
   async createDefaultAdmin() {
     return new Promise((resolve, reject) => {
       const username = 'admin';
-      const password = 'admin123'; // NDRYSHO KËTË në production!
+      // Use environment variable or fail if not in development
+      const password = process.env.ADMIN_PASSWORD || (process.env.NODE_ENV === 'production' ? null : 'admin123');
+      
+      if (!password) {
+        console.error('⚠️  ADMIN_PASSWORD environment variable must be set in production!');
+        reject(new Error('ADMIN_PASSWORD not configured'));
+        return;
+      }
 
       this.db.get('SELECT id FROM admin_users WHERE username = ?', [username], (err, row) => {
         if (err) {
@@ -101,7 +108,7 @@ class Database {
                 if (err) {
                   reject(err);
                 } else {
-                  console.log('👨‍💼 Admin i paracaktuar u krijua: admin/admin123');
+                  console.log('👨‍💼 Admin user created successfully');
                   resolve();
                 }
               }
