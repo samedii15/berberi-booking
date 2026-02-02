@@ -112,6 +112,8 @@ class CleanupService {
     const slotDate = moment(date);
     const isToday = slotDate.isSame(now, 'day');
 
+    console.log(`[SLOT GEN] Date: ${date}, Now: ${now.format('YYYY-MM-DD HH:mm')}, IsToday: ${isToday}`);
+
     for (let hour = workStart; hour < workEnd; hour++) {
       for (let minute = 0; minute < 60; minute += slotDuration) {
         // Create start and end times on the correct date
@@ -127,6 +129,7 @@ class CleanupService {
         if (isToday) {
           // Fshi slot-in nëse ka përfunduar (ora e fundit ka kaluar)
           if (endTime.isSameOrBefore(now)) {
+            console.log(`[SKIP] ${startTime.format('HH:mm')}-${endTime.format('HH:mm')} ended before ${now.format('HH:mm')}`);
             continue; // Kapërce slot-et që kanë përfunduar
           }
         }
