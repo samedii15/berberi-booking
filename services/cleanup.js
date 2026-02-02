@@ -124,13 +124,8 @@ class CleanupService {
 
         // Nëse është sot, shfaq vetëm slot-et që nuk kanë përfunduar ende
         if (isToday) {
-          const slotEndTime = moment().set({ 
-            hour: endTime.hour(), 
-            minute: endTime.minute(), 
-            second: 0 
-          });
           // Fshi slot-in nëse ka përfunduar (ora e fundit ka kaluar)
-          if (slotEndTime.isBefore(now) || slotEndTime.isSame(now)) {
+          if (endTime.isSameOrBefore(now)) {
             continue; // Kapërce slot-et që kanë përfunduar
           }
         }
