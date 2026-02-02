@@ -14,6 +14,9 @@ async function initReservationsPage() {
             console.log('Booking form handler attached');
         }
         
+        // Set up modal backdrop click handlers
+        setupModalHandlers();
+        
         await loadWeeklyCalendar();
         
         // Auto-refresh calendar every 1 minute to hide past slots
@@ -29,6 +32,28 @@ async function initReservationsPage() {
     } catch (error) {
         console.error('Failed to initialize reservations page:', error);
         showErrorState('Ka ndodhur një gabim gjatë ngarkimit. Ju lutem rifreskoni faqen.');
+    }
+}
+
+function setupModalHandlers() {
+    // Success modal backdrop click
+    const successModal = document.getElementById('success-modal');
+    if (successModal) {
+        successModal.addEventListener('click', function(e) {
+            if (e.target === successModal) {
+                closeSuccessModal();
+            }
+        });
+    }
+    
+    // Booking modal backdrop click
+    const bookingModal = document.getElementById('booking-modal');
+    if (bookingModal) {
+        bookingModal.addEventListener('click', function(e) {
+            if (e.target === bookingModal) {
+                closeBookingModal();
+            }
+        });
     }
 }
 
@@ -322,6 +347,9 @@ async function handleBookingSubmit(e) {
         console.log('API response:', response);
         
         if (response.success) {
+            // Store the current selected day date
+            const currentDayDate = App.selectedDay.date;
+            
             // Close booking modal
             closeBookingModal();
             
@@ -330,6 +358,16 @@ async function handleBookingSubmit(e) {
             
             // Refresh calendar
             await loadWeeklyCalendar();
+            
+            // Re-select the current day to update the slots display
+            const updatedDay = App.currentWeek.days.find(d => d.date === currentDayDate);
+            if (updatedDay) {
+                const dayCards = document.querySelectorAll('.day-card');
+                const dayIndex = App.currentWeek.days.findIndex(d => d.date === currentDayDate);
+                if (dayCards[dayIndex]) {
+                    selectDay(updatedDay, dayCards[dayIndex]);
+                }
+            }
         } else {
             console.error('Booking failed:', response.error);
             showBookingMessage(response.error, 'error');
