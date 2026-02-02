@@ -124,9 +124,9 @@ app.get('/admin', (req, res) => {
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
-    version: '1.1.0-auto-refresh',
+    version: '1.2.0-slot-filter-fixed',
     time: moment().format('YYYY-MM-DD HH:mm:ss'),
-    features: ['auto-refresh', 'fast-cleanup']
+    features: ['auto-refresh', 'fast-cleanup', 'correct-slot-filtering']
   });
 });
 
