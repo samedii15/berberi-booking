@@ -10,12 +10,12 @@ class CleanupService {
     // Ekzekuto cleanup në nisje të serverit
     this.performCleanup();
 
-    // Cakto cleanup çdo 5 minuta për të fshirë slot-et që kalojnë
+    // Cakto cleanup çdo 1 minutë për të fshirë slot-et që kalojnë
     this.cleanupInterval = setInterval(() => {
       this.performCleanup();
-    }, 5 * 60 * 1000); // çdo 5 minuta
+    }, 1 * 60 * 1000); // çdo 1 minutë
 
-    console.log('🧹 Cleanup service u nis - kontrollon çdo 5 minuta për rezervime të kaluara');
+    console.log('🧹 Cleanup service u nis - kontrollon çdo 1 minutë për rezervime të kaluara');
   }
 
   async performCleanup() {

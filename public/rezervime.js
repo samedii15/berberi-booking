@@ -1,4 +1,6 @@
 // Rezervime Page JavaScript
+let autoRefreshInterval = null;
+
 document.addEventListener('DOMContentLoaded', function() {
     initReservationsPage();
 });
@@ -13,11 +15,29 @@ async function initReservationsPage() {
         }
         
         await loadWeeklyCalendar();
+        
+        // Auto-refresh calendar every 1 minute to hide past slots
+        autoRefreshInterval = setInterval(async () => {
+            try {
+                await loadWeeklyCalendar();
+                console.log('📅 Calendar auto-refreshed');
+            } catch (error) {
+                console.error('Auto-refresh failed:', error);
+            }
+        }, 60000); // 60 seconds = 1 minute
+        
     } catch (error) {
         console.error('Failed to initialize reservations page:', error);
         showErrorState('Ka ndodhur një gabim gjatë ngarkimit. Ju lutem rifreskoni faqen.');
     }
 }
+
+// Clean up interval when page is unloaded
+window.addEventListener('beforeunload', () => {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+    }
+});
 
 async function loadWeeklyCalendar() {
     try {
