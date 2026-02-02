@@ -126,7 +126,7 @@ class DatabasePG {
 
   async deletePastTimeSlotsToday(currentDate, currentTime) {
     const result = await this.pool.query(
-      'DELETE FROM reservations WHERE date = $1 AND start_time < $2',
+      'DELETE FROM reservations WHERE date = $1 AND end_time <= $2',
       [currentDate, currentTime]
     );
     return result.rowCount;

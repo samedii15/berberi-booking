@@ -241,7 +241,7 @@ class Database {
     });
   }
 
-  // Fshi rezervimet e sotit që ora ka kaluar
+  // Fshi rezervimet e sotit që kanë përfunduar (end_time ka kaluar)
   async deletePastTimeSlotsToday(currentDate, currentTime) {
     // Re-initialize if db is null (Render /tmp cleanup issue)
     if (!this.db) {
@@ -252,7 +252,7 @@ class Database {
     return new Promise((resolve, reject) => {
       const sql = `
         DELETE FROM reservations 
-        WHERE date = ? AND start_time < ?
+        WHERE date = ? AND end_time <= ?
       `;
 
       this.db.run(sql, [currentDate, currentTime], function(err) {

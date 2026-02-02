@@ -24,10 +24,10 @@ class CleanupService {
       const currentDate = now.format('YYYY-MM-DD');
       const currentTime = now.format('HH:mm');
 
-      // Fshi rezervimet që kanë kaluar (data e kaluar OSE data e sotme por ora e kaluar)
+      // Fshi rezervimet që kanë kaluar (data e kaluar)
       const result = await database.deleteOldReservations(currentDate);
       
-      // Gjithashtu fshi rezervimet e sotit që ora ka kaluar
+      // Fshi rezervimet e sotit që kanë përfunduar (end_time ka kaluar)
       const todayOldSlots = await database.deletePastTimeSlotsToday(currentDate, currentTime);
       
       const totalDeleted = (result.deleted || 0) + (todayOldSlots || 0);
@@ -122,11 +122,16 @@ class CleanupService {
           break;
         }
 
-        // Nëse është sot, shfaq vetëm slot-et që janë në të ardhmen
+        // Nëse është sot, shfaq vetëm slot-et që nuk kanë përfunduar ende
         if (isToday) {
-          const slotTime = moment().set({ hour: hour, minute: minute, second: 0 });
-          if (slotTime.isBefore(now)) {
-            continue; // Kapërce slot-et që kanë kaluar
+          const slotEndTime = moment().set({ 
+            hour: endTime.hour(), 
+            minute: endTime.minute(), 
+            second: 0 
+          });
+          // Fshi slot-in nëse ka përfunduar (ora e fundit ka kaluar)
+          if (slotEndTime.isBefore(now) || slotEndTime.isSame(now)) {
+            continue; // Kapërce slot-et që kanë përfunduar
           }
         }
 
