@@ -9,28 +9,40 @@ let reservationsData = null;
 let selectedReservationForCancel = null;
 
 function initAdminPage() {
-    // Auto-login for testing - skip login form
-    console.log('Auto-logging in as admin for testing');
+    // Check if already logged in via session
+    checkLoginStatus();
     
-    // Set admin data directly
-    adminData = { id: 1, username: 'admin' };
-    isLoggedIn = true;
-    
-    // Hide login section and show dashboard immediately
-    document.getElementById('login-section').style.display = 'none';
-    
-    // Show header buttons
-    document.getElementById('back-btn').style.display = 'inline-flex';
-    document.getElementById('logout-btn').style.display = 'inline-flex';
-    
-    // Load dashboard directly
-    loadReservations().then(() => {
-        document.getElementById('dashboard-section').style.display = 'block';
-        console.log('Dashboard loaded successfully');
-    }).catch(error => {
-        console.error('Failed to load reservations:', error);
-        document.getElementById('dashboard-section').style.display = 'block';
-    });
+    // Setup login form
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+        loginForm.addEventListener('submit', handleLogin);
+    }
+}
+
+async function checkLoginStatus() {
+    try {
+        const response = await App.apiRequest('/api/admin/session');
+        
+        if (response.success && response.loggedIn) {
+            adminData = response.admin;
+            isLoggedIn = true;
+            
+            // Hide login section and show dashboard
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('back-btn').style.display = 'inline-flex';
+            document.getElementById('logout-btn').style.display = 'inline-flex';
+            
+            // Load dashboard
+            await loadDashboard();
+        } else {
+            // Show login section
+            document.getElementById('login-section').style.display = 'block';
+        }
+    } catch (error) {
+        console.error('Failed to check login status:', error);
+        // Show login section on error
+        document.getElementById('login-section').style.display = 'block';
+    }
 }
 
 async function handleLogin(e) {
@@ -408,27 +420,36 @@ function showAdminCancelMessage(message, type = 'info') {
     messageContainer.style.display = 'block';
 }
 
-function logout() {
-    // Reset state
-    isLoggedIn = false;
-    adminData = null;
-    reservationsData = null;
-    selectedReservationForCancel = null;
-    
-    // Reset form
-    document.getElementById('username').value = '';
-    document.getElementById('password').value = '';
-    document.getElementById('login-message').style.display = 'none';
-    
-    // Hide dashboard and show login
-    document.getElementById('dashboard-section').style.display = 'none';
-    document.getElementById('loading-dashboard').style.display = 'none';
-    document.getElementById('login-section').style.display = 'block';
-    document.getElementById('back-btn').style.display = 'none';
-    document.getElementById('logout-btn').style.display = 'none';
-    
-    // Focus on username field
-    setTimeout(() => {
-        document.getElementById('username').focus();
-    }, 300);
+async function logout() {
+    try {
+        // Call logout endpoint
+        await App.apiRequest('/api/admin/dil', {
+            method: 'POST'
+        });
+    } catch (error) {
+        console.error('Logout error:', error);
+    } finally {
+        // Reset state regardless of API call result
+        isLoggedIn = false;
+        adminData = null;
+        reservationsData = null;
+        selectedReservationForCancel = null;
+        
+        // Reset form
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+        document.getElementById('login-message').style.display = 'none';
+        
+        // Hide dashboard and show login
+        document.getElementById('dashboard-section').style.display = 'none';
+        document.getElementById('loading-dashboard').style.display = 'none';
+        document.getElementById('login-section').style.display = 'block';
+        document.getElementById('back-btn').style.display = 'none';
+        document.getElementById('logout-btn').style.display = 'none';
+        
+        // Focus on username field
+        setTimeout(() => {
+            document.getElementById('username').focus();
+        }, 300);
+    }
 }

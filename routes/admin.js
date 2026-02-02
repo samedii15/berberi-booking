@@ -6,6 +6,36 @@ const database = process.env.DATABASE_URL
   : require('../database/db');
 const cleanupService = require('../services/cleanup');
 
+// Authentication middleware
+function requireAuth(req, res, next) {
+  if (!req.session || !req.session.adminId) {
+    return res.status(401).json({
+      success: false,
+      error: 'Nuk jeni të autorizuar. Ju lutem hyni së pari.'
+    });
+  }
+  next();
+}
+
+// GET /api/admin/session - Check if logged in
+router.get('/session', (req, res) => {
+  if (req.session && req.session.adminId) {
+    res.json({
+      success: true,
+      loggedIn: true,
+      admin: {
+        id: req.session.adminId,
+        username: req.session.username
+      }
+    });
+  } else {
+    res.json({
+      success: true,
+      loggedIn: false
+    });
+  }
+});
+
 // POST /api/admin/hyrje - Admin login
 router.post('/hyrje', async (req, res) => {
   try {
@@ -34,9 +64,9 @@ router.post('/hyrje', async (req, res) => {
       });
     }
 
-    // Në një aplikacion real, këtu do të gjeneronit JWT token
-    // Për këtë projekt të thjeshtë, thjesht konfirmojmë login
-    req.session = { adminId: admin.id, username: admin.username };
+    // Set session
+    req.session.adminId = admin.id;
+    req.session.username = admin.username;
 
     res.json({
       success: true,
@@ -56,8 +86,25 @@ router.post('/hyrje', async (req, res) => {
   }
 });
 
+// POST /api/admin/dil - Admin logout
+router.post('/dil', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Error destroying session:', err);
+      return res.status(500).json({
+        success: false,
+        error: 'Ka ndodhur një gabim gjatë daljes.'
+      });
+    }
+    res.json({
+      success: true,
+      message: 'U dolët me sukses.'
+    });
+  });
+});
+
 // GET /api/admin/rezervimet - Lista e të gjitha rezervimeve të javës aktuale
-router.get('/rezervimet', async (req, res) => {
+router.get('/rezervimet', requireAuth, async (req, res) => {
   try {
     const weekData = cleanupService.getCurrentWeekDates();
     const reservations = await database.getWeekReservations(weekData.startDate, weekData.endDate);
@@ -116,7 +163,7 @@ router.get('/rezervimet', async (req, res) => {
 });
 
 // POST /api/admin/anulo-rezervim - Anulon një rezervim (admin)
-router.post('/anulo-rezervim', async (req, res) => {
+router.post('/anulo-rezervim', requireAuth, async (req, res) => {
   try {
     const { reservationCode } = req.body;
 
