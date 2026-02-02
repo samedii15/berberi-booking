@@ -114,7 +114,8 @@ class CleanupService {
 
     for (let hour = workStart; hour < workEnd; hour++) {
       for (let minute = 0; minute < 60; minute += slotDuration) {
-        const startTime = moment().hour(hour).minute(minute).second(0);
+        // Create start and end times on the correct date
+        const startTime = moment(date).hour(hour).minute(minute).second(0);
         const endTime = startTime.clone().add(slotDuration, 'minutes');
         
         // Kontrollo që slot-i të mos kalojë orën 20:00
