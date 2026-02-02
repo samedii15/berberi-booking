@@ -1,4 +1,6 @@
 // Admin Page JavaScript
+let autoRefreshInterval = null;
+
 document.addEventListener('DOMContentLoaded', function() {
     initAdminPage();
 });
@@ -7,6 +9,13 @@ let isLoggedIn = false;
 let adminData = null;
 let reservationsData = null;
 let selectedReservationForCancel = null;
+
+// Clean up interval when page is unloaded
+window.addEventListener('beforeunload', () => {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+    }
+});
 
 function initAdminPage() {
     // Check if already logged in via session
@@ -141,6 +150,9 @@ async function loadDashboard() {
             console.error('dashboard-section element not found!');
         }
         
+        // Start auto-refresh for reservations (every 1 minute)
+        startAutoRefresh();
+        
     } catch (error) {
         console.error('Failed to load dashboard:', error);
         console.error('Error details:', error.message, error.stack);
@@ -225,6 +237,34 @@ async function loadReservations() {
     } catch (error) {
         console.error('Failed to load reservations:', error);
         throw error;
+    }
+}
+
+function startAutoRefresh() {
+    // Clear any existing interval
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+    }
+    
+    // Set up auto-refresh every 1 minute
+    autoRefreshInterval = setInterval(async () => {
+        try {
+            console.log('🔄 Auto-refreshing reservations...');
+            await loadReservations();
+            console.log('✅ Auto-refresh completed');
+        } catch (error) {
+            console.error('❌ Auto-refresh failed:', error);
+        }
+    }, 60000); // 60 seconds = 1 minute
+    
+    console.log('✅ Auto-refresh started (every 60 seconds)');
+}
+
+function stopAutoRefresh() {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
+        console.log('Auto-refresh stopped');
     }
 }
 
@@ -583,6 +623,9 @@ async function logout() {
     } catch (error) {
         console.error('Logout error:', error);
     } finally {
+        // Stop auto-refresh
+        stopAutoRefresh();
+        
         // Reset state regardless of API call result
         isLoggedIn = false;
         adminData = null;
