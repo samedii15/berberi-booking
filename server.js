@@ -3,7 +3,10 @@ const path = require('path');
 const helmet = require('helmet');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
-const moment = require('moment');
+const moment = require('moment-timezone');
+
+// Set default timezone to Europe/Tirane (Albania)
+moment.tz.setDefault('Europe/Tirane');
 
 // Use PostgreSQL if DATABASE_URL is set, otherwise SQLite
 const database = process.env.DATABASE_URL 

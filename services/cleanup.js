@@ -1,5 +1,8 @@
-const moment = require('moment');
+const moment = require('moment-timezone');
 const database = require('../database/db');
+
+// Set default timezone to Europe/Tirane (Albania)
+moment.tz.setDefault('Europe/Tirane');
 
 class CleanupService {
   constructor() {
