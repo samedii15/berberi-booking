@@ -108,29 +108,50 @@ function showLoginMessage(message, type = 'info') {
 
 async function loadDashboard() {
     // Show loading
-    document.getElementById('loading-dashboard').style.display = 'block';
+    const loadingEl = document.getElementById('loading-dashboard');
+    loadingEl.style.display = 'block';
     
     try {
         await loadReservations();
         
         // Hide loading and show dashboard
-        document.getElementById('loading-dashboard').style.display = 'none';
+        loadingEl.style.display = 'none';
         document.getElementById('dashboard-section').style.display = 'block';
         
     } catch (error) {
         console.error('Failed to load dashboard:', error);
-        document.getElementById('loading-dashboard').innerHTML = `
+        
+        // Create retry button with proper event listener
+        loadingEl.innerHTML = `
             <div class="container">
                 <div class="loading-content">
                     <div style="font-size: 2rem; margin-bottom: 1rem;">❌</div>
                     <h3>Ka ndodhur një gabim</h3>
                     <p style="margin-bottom: 2rem;">Nuk mund të ngarkohet dashboard-i.</p>
-                    <button class="btn-primary" onclick="loadDashboard()">
+                    <button class="btn-primary" id="retry-dashboard-btn">
                         Provo Përsëri
                     </button>
                 </div>
             </div>
         `;
+        
+        // Add event listener to retry button
+        setTimeout(() => {
+            const retryBtn = document.getElementById('retry-dashboard-btn');
+            if (retryBtn) {
+                retryBtn.addEventListener('click', () => {
+                    loadingEl.innerHTML = `
+                        <div class="container">
+                            <div class="loading-content">
+                                <div class="spinner-large"></div>
+                                <p>Duke ngarkuar rezervimet...</p>
+                            </div>
+                        </div>
+                    `;
+                    loadDashboard();
+                });
+            }
+        }, 100);
     }
 }
 
@@ -139,6 +160,18 @@ async function loadReservations() {
         const response = await App.apiRequest('/api/admin/rezervimet');
         
         if (!response.success) {
+            // Check if it's an authentication error
+            if (response.error && response.error.includes('autorizuar')) {
+                // User is not authenticated, redirect to login
+                isLoggedIn = false;
+                adminData = null;
+                document.getElementById('dashboard-section').style.display = 'none';
+                document.getElementById('loading-dashboard').style.display = 'none';
+                document.getElementById('login-section').style.display = 'block';
+                document.getElementById('back-btn').style.display = 'none';
+                document.getElementById('logout-btn').style.display = 'none';
+                throw new Error('Session expired. Please login again.');
+            }
             throw new Error(response.error || 'Failed to load reservations');
         }
         

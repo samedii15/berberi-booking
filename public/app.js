@@ -72,11 +72,15 @@ const App = {
                 ...options
             });
 
+            // Try to parse JSON response
+            const data = await response.json();
+
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                // Return the error data from server if available
+                return data;
             }
 
-            return await response.json();
+            return data;
         } catch (error) {
             console.error('API Request failed:', error);
             throw error;
