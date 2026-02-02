@@ -78,14 +78,21 @@ async function handleLogin(e) {
             adminData = response.admin;
             isLoggedIn = true;
             
+            console.log('Login successful, hiding login section...');
+            
             // Hide login section and show dashboard
             document.getElementById('login-section').style.display = 'none';
-            document.getElementById('back-btn').style.display = 'block';
-            document.getElementById('logout-btn').style.display = 'block';
+            document.getElementById('back-btn').style.display = 'inline-flex';
+            document.getElementById('logout-btn').style.display = 'inline-flex';
+            
+            console.log('Loading dashboard...');
             
             // Load dashboard
             await loadDashboard();
+            
+            console.log('Dashboard loaded successfully');
         } else {
+            console.log('Login failed:', response.error);
             showLoginMessage(response.error, 'error');
         }
         
@@ -107,19 +114,36 @@ function showLoginMessage(message, type = 'info') {
 }
 
 async function loadDashboard() {
+    console.log('loadDashboard called');
+    
     // Show loading
     const loadingEl = document.getElementById('loading-dashboard');
+    if (!loadingEl) {
+        console.error('loading-dashboard element not found!');
+        return;
+    }
+    
     loadingEl.style.display = 'block';
+    console.log('Loading element displayed');
     
     try {
+        console.log('Calling loadReservations...');
         await loadReservations();
         
+        console.log('Reservations loaded, showing dashboard...');
         // Hide loading and show dashboard
         loadingEl.style.display = 'none';
-        document.getElementById('dashboard-section').style.display = 'block';
+        const dashboardEl = document.getElementById('dashboard-section');
+        if (dashboardEl) {
+            dashboardEl.style.display = 'block';
+            console.log('Dashboard section displayed');
+        } else {
+            console.error('dashboard-section element not found!');
+        }
         
     } catch (error) {
         console.error('Failed to load dashboard:', error);
+        console.error('Error details:', error.message, error.stack);
         
         // Create retry button with proper event listener
         loadingEl.innerHTML = `
@@ -156,12 +180,18 @@ async function loadDashboard() {
 }
 
 async function loadReservations() {
+    console.log('loadReservations called');
+    
     try {
+        console.log('Making API request to /api/admin/rezervimet...');
         const response = await App.apiRequest('/api/admin/rezervimet');
+        
+        console.log('API response received:', response);
         
         if (!response.success) {
             // Check if it's an authentication error
             if (response.error && response.error.includes('autorizuar')) {
+                console.log('Authentication error detected');
                 // User is not authenticated, redirect to login
                 isLoggedIn = false;
                 adminData = null;
@@ -175,16 +205,22 @@ async function loadReservations() {
             throw new Error(response.error || 'Failed to load reservations');
         }
         
+        console.log('Storing reservation data...');
         reservationsData = response;
         
         // Update week info
+        console.log('Updating week info...');
         updateWeekInfo(response.week);
         
         // Update statistics
+        console.log('Updating statistics...');
         updateStatistics(response.statistics);
         
         // Render reservations by day
+        console.log('Rendering reservations by day...');
         renderReservationsByDay(response.reservationsByDay);
+        
+        console.log('loadReservations completed successfully');
         
     } catch (error) {
         console.error('Failed to load reservations:', error);
