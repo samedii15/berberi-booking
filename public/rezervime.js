@@ -366,6 +366,14 @@ function showSuccessModal(reservation) {
     setTimeout(() => modal.classList.add('active'), 10);
 }
 
+function closeSuccessModal() {
+    const modal = document.getElementById('success-modal');
+    modal.classList.remove('active');
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 300);
+}
+
 function copyCode() {
     const code = document.getElementById('reservation-code').textContent;
     
@@ -402,3 +410,5 @@ function showErrorState(message) {
 window.confirmReservation = confirmReservation;
 window.closeModal = closeModal;
 window.resetAndGoHome = resetAndGoHome;
+window.copyCode = copyCode;
+window.closeSuccessModal = closeSuccessModal;
