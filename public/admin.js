@@ -257,6 +257,7 @@ function renderReservationsByDay(reservationsByDay) {
     days.forEach(day => {
         const daySection = document.createElement('div');
         daySection.className = 'day-section';
+        if (day.isRestDay) daySection.classList.add('rest-day-section');
         
         const hasReservations = day.reservations.length > 0;
         const activeReservations = day.reservations.filter(r => r.status === 'active');
@@ -266,21 +267,39 @@ function renderReservationsByDay(reservationsByDay) {
                 <div class="day-title">
                     ${day.dayInfo.dayName}, ${day.dayInfo.dayNumber} ${day.dayInfo.month}
                     ${day.dayInfo.isToday ? '<span style="color: #48bb78; font-size: 0.9rem;">(Sot)</span>' : ''}
+                    ${day.isRestDay ? '<span style="color: #e53e3e; font-size: 0.9rem; margin-left: 0.5rem;">🛏️ Dit pushimi</span>' : ''}
                 </div>
-                <div class="day-count ${hasReservations ? '' : 'empty'}">
-                    ${activeReservations.length} rezervime
+                <div class="day-actions">
+                    ${!day.isRestDay ? `
+                        <button class="btn-small warning mark-rest-btn" 
+                                data-date="${day.date}"
+                                data-day="${day.dayInfo.dayName}, ${day.dayInfo.dayNumber} ${day.dayInfo.month}"
+                                title="Shëno si ditë pushimi">
+                            Pushim
+                        </button>
+                    ` : `
+                        <button class="btn-small success unmark-rest-btn" 
+                                data-date="${day.date}"
+                                title="Hiq ditën e pushimit">
+                            Hap
+                        </button>
+                    `}
+                    <span class="day-count ${hasReservations ? '' : 'empty'}">
+                        ${activeReservations.length} rezervime
+                    </span>
                 </div>
             </div>
             <div class="reservations-list">
-                ${hasReservations ? renderDayReservations(day.reservations) : renderEmptyDay()}
+                ${day.isRestDay ? renderRestDayMessage() : (hasReservations ? renderDayReservations(day.reservations) : renderEmptyDay())}
             </div>
         `;
         
         container.appendChild(daySection);
     });
     
-    // Setup cancel button event listeners after DOM is updated
+    // Setup event listeners
     setupCancelButtonListeners();
+    setupRestDayButtonListeners();
 }
 
 function renderDayReservations(reservations) {
@@ -315,6 +334,72 @@ function renderEmptyDay() {
             <div>Asnjë rezervim për këtë ditë</div>
         </div>
     `;
+}
+
+function renderRestDayMessage() {
+    return `
+        <div class="empty-day">
+            <div class="empty-day-icon">🛏️</div>
+            <div>Dit pushimi - Të gjitha rezervimet janë anuluar</div>
+        </div>
+    `;
+}
+
+function setupRestDayButtonListeners() {
+    // Mark as rest day
+    document.querySelectorAll('.mark-rest-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            const date = e.target.dataset.date;
+            const dayName = e.target.dataset.day;
+            
+            if (confirm(`A jeni i sigurt që dëshironi të shënoni ${dayName} si ditë pushimi? Të gjitha rezervimet do të anulohen.`)) {
+                try {
+                    const response = await App.apiRequest('/api/admin/sheno-pushim', {
+                        method: 'POST',
+                        body: JSON.stringify({ date })
+                    });
+                    
+                    if (response.success) {
+                        // Reload reservations
+                        await loadReservations();
+                        alert(`${dayName} u shënua si ditë pushimi. ${response.deletedReservations} rezervime u fshinë.`);
+                    } else {
+                        alert(response.error || 'Ka ndodhur një gabim.');
+                    }
+                } catch (error) {
+                    console.error('Error marking rest day:', error);
+                    alert('Ka ndodhur një gabim gjatë shënimit të ditës së pushimit.');
+                }
+            }
+        });
+    });
+    
+    // Unmark rest day
+    document.querySelectorAll('.unmark-rest-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            const date = e.target.dataset.date;
+            
+            if (confirm('A jeni i sigurt që dëshironi të hapni këtë ditë për rezervime?')) {
+                try {
+                    const response = await App.apiRequest('/api/admin/hiq-pushim', {
+                        method: 'POST',
+                        body: JSON.stringify({ date })
+                    });
+                    
+                    if (response.success) {
+                        // Reload reservations
+                        await loadReservations();
+                        alert('Dita u hap për rezervime.');
+                    } else {
+                        alert(response.error || 'Ka ndodhur një gabim.');
+                    }
+                } catch (error) {
+                    console.error('Error unmarking rest day:', error);
+                    alert('Ka ndodhur një gabim gjatë heqjes së ditës së pushimit.');
+                }
+            }
+        });
+    });
 }
 
 function setupCancelButtonListeners() {

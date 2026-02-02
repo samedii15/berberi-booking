@@ -10,9 +10,22 @@ router.get('/java', async (req, res) => {
   try {
     const weekData = cleanupService.getCurrentWeekDates();
     const reservations = await database.getWeekReservations(weekData.startDate, weekData.endDate);
+    const restDays = await database.getRestDays(weekData.startDate, weekData.endDate);
 
     // Gjenero slot-et për çdo ditë
     const daysWithSlots = weekData.days.map(day => {
+      const isRestDay = restDays.includes(day.date);
+      
+      // Nëse është ditë pushimi, kthe ditën me një status special
+      if (isRestDay) {
+        return {
+          ...day,
+          slots: [],
+          isRestDay: true,
+          message: 'Dit pushimi'
+        };
+      }
+
       const slots = cleanupService.generateDaySlots(day.date);
       
       // Shëno slot-et e rezervuara
@@ -33,7 +46,8 @@ router.get('/java', async (req, res) => {
 
       return {
         ...day,
-        slots: slots
+        slots: slots,
+        isRestDay: false
       };
     });
 
@@ -43,12 +57,14 @@ router.get('/java', async (req, res) => {
         ...weekData,
         days: daysWithSlots
       },
+      restDays: restDays,
       meta: {
         totalSlots: daysWithSlots.reduce((sum, day) => sum + day.slots.length, 0),
         availableSlots: daysWithSlots.reduce((sum, day) => 
           sum + day.slots.filter(slot => slot.isAvailable).length, 0
         ),
         reservedSlots: reservations.length,
+        restDaysCount: restDays.length,
         generatedAt: new Date().toISOString()
       }
     });

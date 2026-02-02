@@ -95,27 +95,31 @@ function renderDays(days) {
         const dayCard = document.createElement('div');
         dayCard.className = 'day-card';
         if (day.isToday) dayCard.classList.add('today');
+        if (day.isRestDay) dayCard.classList.add('rest-day');
         
         dayCard.innerHTML = `
             <div class="day-name">${day.dayShort}</div>
             <div class="day-number">${day.dayNumber}</div>
             <div class="day-month">${day.month.substring(0, 3)}</div>
+            ${day.isRestDay ? '<div class="rest-badge">Pushim</div>' : ''}
         `;
         
         dayCard.addEventListener('click', () => selectDay(day, dayCard));
         container.appendChild(dayCard);
         
-        // Auto-select today if available
-        if (day.isToday && !App.selectedDay) {
+        // Auto-select today if available and not a rest day
+        if (day.isToday && !App.selectedDay && !day.isRestDay) {
             setTimeout(() => selectDay(day, dayCard), 100);
         }
     });
     
-    // If no today, select first day
+    // If no today or today is rest day, select first non-rest day
     if (!App.selectedDay && days.length > 0) {
+        const firstAvailableDay = days.find(d => !d.isRestDay) || days[0];
+        const dayIndex = days.indexOf(firstAvailableDay);
         setTimeout(() => {
-            const firstCard = container.firstElementChild;
-            selectDay(days[0], firstCard);
+            const dayCards = container.querySelectorAll('.day-card');
+            selectDay(firstAvailableDay, dayCards[dayIndex]);
         }, 100);
     }
 }
@@ -137,15 +141,33 @@ function selectDay(day, dayCard) {
     const selectedDaySubtitle = document.getElementById('selected-day-subtitle');
     
     selectedDayTitle.textContent = `${day.dayName}, ${day.dayNumber} ${day.month}`;
-    selectedDaySubtitle.textContent = `${day.slots.filter(s => s.isAvailable).length} slot-e të lira`;
+    
+    // Check if it's a rest day
+    if (day.isRestDay) {
+        selectedDaySubtitle.textContent = day.message || 'Dit pushimi';
+    } else {
+        selectedDaySubtitle.textContent = `${day.slots.filter(s => s.isAvailable).length} slot-e të lira`;
+    }
     
     // Render slots for selected day
-    renderSlots(day.slots);
+    renderSlots(day.slots, day.isRestDay);
 }
 
-function renderSlots(slots) {
+function renderSlots(slots, isRestDay = false) {
     const container = document.getElementById('slots-container');
     container.innerHTML = '';
+    
+    // If it's a rest day, show a special message
+    if (isRestDay) {
+        container.innerHTML = `
+            <div class="rest-day-message">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">😴</div>
+                <h3>Dit pushimi</h3>
+                <p>Nuk ka slot të disponueshëm për këtë ditë.</p>
+            </div>
+        `;
+        return;
+    }
     
     if (slots.length === 0) {
         container.innerHTML = `

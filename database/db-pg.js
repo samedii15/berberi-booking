@@ -49,8 +49,17 @@ class DatabasePG {
       )
     `;
 
+    const createRestDaysTable = `
+      CREATE TABLE IF NOT EXISTS rest_days (
+        id SERIAL PRIMARY KEY,
+        date TEXT UNIQUE NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
     await this.pool.query(createReservationsTable);
     await this.pool.query(createAdminUsersTable);
+    await this.pool.query(createRestDaysTable);
     console.log('✅ Tables created successfully');
     
     await this.createDefaultAdmin();
@@ -138,6 +147,47 @@ class DatabasePG {
       [username]
     );
     return result.rows[0];
+  }
+
+  // Rest days management
+  async markDayAsRest(date) {
+    const result = await this.pool.query(
+      'INSERT INTO rest_days (date) VALUES ($1) ON CONFLICT (date) DO NOTHING RETURNING id',
+      [date]
+    );
+    return { id: result.rows[0]?.id };
+  }
+
+  async unmarkRestDay(date) {
+    const result = await this.pool.query(
+      'DELETE FROM rest_days WHERE date = $1',
+      [date]
+    );
+    return { changes: result.rowCount };
+  }
+
+  async isRestDay(date) {
+    const result = await this.pool.query(
+      'SELECT * FROM rest_days WHERE date = $1',
+      [date]
+    );
+    return result.rows.length > 0;
+  }
+
+  async getRestDays(startDate, endDate) {
+    const result = await this.pool.query(
+      'SELECT date FROM rest_days WHERE date BETWEEN $1 AND $2',
+      [startDate, endDate]
+    );
+    return result.rows.map(r => r.date);
+  }
+
+  async deleteReservationsForDate(date) {
+    const result = await this.pool.query(
+      'DELETE FROM reservations WHERE date = $1',
+      [date]
+    );
+    return { deleted: result.rowCount };
   }
 
   async close() {

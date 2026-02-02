@@ -127,13 +127,16 @@ router.get('/rezervimet', requireAuth, async (req, res) => {
   try {
     const weekData = cleanupService.getCurrentWeekDates();
     const reservations = await database.getWeekReservations(weekData.startDate, weekData.endDate);
+    const restDays = await database.getRestDays(weekData.startDate, weekData.endDate);
 
     // Gruppo rezervimet sipas ditës
     const reservationsByDay = {};
     weekData.days.forEach(day => {
+      const isRestDay = restDays.includes(day.date);
       reservationsByDay[day.date] = {
         dayInfo: day,
-        reservations: []
+        reservations: [],
+        isRestDay: isRestDay
       };
     });
 
@@ -163,6 +166,7 @@ router.get('/rezervimet', requireAuth, async (req, res) => {
       success: true,
       week: weekData,
       reservationsByDay: reservationsByDay,
+      restDays: restDays,
       statistics: {
         totalReservations: reservations.length,
         activeReservations: reservations.filter(r => r.status === 'active').length,
@@ -213,6 +217,76 @@ router.post('/anulo-rezervim', requireAuth, async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Ka ndodhur një gabim gjatë anulimit të rezervimit.'
+    });
+  }
+});
+
+// POST /api/admin/sheno-pushim - Mark a day as rest day
+router.post('/sheno-pushim', requireAuth, async (req, res) => {
+  try {
+    const { date } = req.body;
+
+    if (!date) {
+      return res.status(400).json({
+        success: false,
+        error: 'Data është e detyrueshme.'
+      });
+    }
+
+    // Delete all reservations for this date
+    const deleteResult = await database.deleteReservationsForDate(date);
+    
+    // Mark day as rest day
+    await database.markDayAsRest(date);
+
+    res.json({
+      success: true,
+      message: `Dita ${date} u shënua si ditë pushimi. ${deleteResult.deleted} rezervime u fshinë.`,
+      date: date,
+      deletedReservations: deleteResult.deleted
+    });
+
+  } catch (error) {
+    console.error('Gabim në /api/admin/sheno-pushim:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Ka ndodhur një gabim gjatë shënimit të ditës së pushimit.'
+    });
+  }
+});
+
+// POST /api/admin/hiq-pushim - Unmark a rest day
+router.post('/hiq-pushim', requireAuth, async (req, res) => {
+  try {
+    const { date } = req.body;
+
+    if (!date) {
+      return res.status(400).json({
+        success: false,
+        error: 'Data është e detyrueshme.'
+      });
+    }
+
+    const result = await database.unmarkRestDay(date);
+
+    if (result.changes === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Kjo ditë nuk është e shënuar si ditë pushimi.'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: `Dita ${date} nuk është më ditë pushimi.`,
+      date: date
+    });
+
+  } catch (error) {
+    console.error('Gabim në /api/admin/hiq-pushim:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Ka ndodhur një gabim gjatë heqjes së ditës së pushimit.'
     });
   }
 });

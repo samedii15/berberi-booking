@@ -51,6 +51,14 @@ class Database {
         )
       `;
 
+      const createRestDaysTable = `
+        CREATE TABLE IF NOT EXISTS rest_days (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          date TEXT UNIQUE NOT NULL,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+      `;
+
       this.db.serialize(() => {
         this.db.run(createReservationsTable, (err) => {
           if (err) {
@@ -62,6 +70,13 @@ class Database {
         this.db.run(createAdminUsersTable, (err) => {
           if (err) {
             console.error('Gabim gjatë krijimit të tabelës admin_users:', err.message);
+            reject(err);
+          }
+        });
+
+        this.db.run(createRestDaysTable, (err) => {
+          if (err) {
+            console.error('Gabim gjatë krijimit të tabelës rest_days:', err.message);
             reject(err);
           }
         });
@@ -277,6 +292,72 @@ class Database {
           resolve(row);
         }
       });
+    });
+  }
+
+  // Rest days management
+  markDayAsRest(date) {
+    return new Promise((resolve, reject) => {
+      this.db.run(
+        'INSERT OR IGNORE INTO rest_days (date) VALUES (?)',
+        [date],
+        function(err) {
+          if (err) reject(err);
+          else resolve({ id: this.lastID });
+        }
+      );
+    });
+  }
+
+  unmarkRestDay(date) {
+    return new Promise((resolve, reject) => {
+      this.db.run(
+        'DELETE FROM rest_days WHERE date = ?',
+        [date],
+        function(err) {
+          if (err) reject(err);
+          else resolve({ changes: this.changes });
+        }
+      );
+    });
+  }
+
+  isRestDay(date) {
+    return new Promise((resolve, reject) => {
+      this.db.get(
+        'SELECT * FROM rest_days WHERE date = ?',
+        [date],
+        (err, row) => {
+          if (err) reject(err);
+          else resolve(!!row);
+        }
+      );
+    });
+  }
+
+  getRestDays(startDate, endDate) {
+    return new Promise((resolve, reject) => {
+      this.db.all(
+        'SELECT date FROM rest_days WHERE date BETWEEN ? AND ?',
+        [startDate, endDate],
+        (err, rows) => {
+          if (err) reject(err);
+          else resolve(rows.map(r => r.date));
+        }
+      );
+    });
+  }
+
+  deleteReservationsForDate(date) {
+    return new Promise((resolve, reject) => {
+      this.db.run(
+        'DELETE FROM reservations WHERE date = ?',
+        [date],
+        function(err) {
+          if (err) reject(err);
+          else resolve({ deleted: this.changes });
+        }
+      );
     });
   }
 

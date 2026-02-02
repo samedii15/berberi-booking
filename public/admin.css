@@ -224,6 +224,13 @@
     font-size: 1.2rem;
     font-weight: 600;
     color: #1a202c;
+    flex: 1;
+}
+
+.day-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .day-count {
@@ -237,6 +244,28 @@
 
 .day-count.empty {
     background: #a0aec0;
+}
+
+.btn-small.warning {
+    background: #ed8936;
+    color: white;
+}
+
+.btn-small.warning:hover {
+    background: #dd6b20;
+}
+
+.btn-small.success {
+    background: #48bb78;
+    color: white;
+}
+
+.btn-small.success:hover {
+    background: #38a169;
+}
+
+.rest-day-section {
+    opacity: 0.85;
 }
 
 /* Reservation Items */
