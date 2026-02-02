@@ -115,7 +115,13 @@ class Database {
   }
 
   // Rezervime CRUD
-  createReservation(fullName, date, startTime, endTime, code) {
+  async createReservation(fullName, date, startTime, endTime, code) {
+    // Re-initialize if db is null
+    if (!this.db) {
+      console.log('⚠️  Database connection lost, re-initializing...');
+      await this.init();
+    }
+    
     return new Promise((resolve, reject) => {
       const sql = `
         INSERT INTO reservations (full_name, date, start_time, end_time, reservation_code)
@@ -132,7 +138,13 @@ class Database {
     });
   }
 
-  getReservationByCode(code) {
+  async getReservationByCode(code) {
+    // Re-initialize if db is null
+    if (!this.db) {
+      console.log('⚠️  Database connection lost, re-initializing...');
+      await this.init();
+    }
+    
     return new Promise((resolve, reject) => {
       const sql = `
         SELECT * FROM reservations 
@@ -149,7 +161,13 @@ class Database {
     });
   }
 
-  getWeekReservations(startDate, endDate) {
+  async getWeekReservations(startDate, endDate) {
+    // Re-initialize if db is null
+    if (!this.db) {
+      console.log('⚠️  Database connection lost, re-initializing...');
+      await this.init();
+    }
+    
     return new Promise((resolve, reject) => {
       const sql = `
         SELECT * FROM reservations 
@@ -203,7 +221,13 @@ class Database {
   }
 
   // Pastrimi javor
-  deleteOldReservations(beforeDate) {
+  async deleteOldReservations(beforeDate) {
+    // Re-initialize if db is null (Render /tmp cleanup issue)
+    if (!this.db) {
+      console.log('⚠️  Database connection lost, re-initializing...');
+      await this.init();
+    }
+    
     return new Promise((resolve, reject) => {
       const sql = 'DELETE FROM reservations WHERE date < ?';
 
@@ -218,7 +242,13 @@ class Database {
   }
 
   // Fshi rezervimet e sotit që ora ka kaluar
-  deletePastTimeSlotsToday(currentDate, currentTime) {
+  async deletePastTimeSlotsToday(currentDate, currentTime) {
+    // Re-initialize if db is null (Render /tmp cleanup issue)
+    if (!this.db) {
+      console.log('⚠️  Database connection lost, re-initializing...');
+      await this.init();
+    }
+    
     return new Promise((resolve, reject) => {
       const sql = `
         DELETE FROM reservations 
