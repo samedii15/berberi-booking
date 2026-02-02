@@ -17,6 +17,9 @@ const database = process.env.DATABASE_URL
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust proxy - required for Render.com and other cloud platforms
+app.set('trust proxy', 1);
+
 // Middleware
 app.use(helmet({
   contentSecurityPolicy: {
@@ -42,11 +45,13 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'berberi-secret-key-change-in-production',
   resave: false,
   saveUninitialized: false,
+  proxy: true, // Trust the reverse proxy
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === 'production', // true in production (HTTPS)
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    sameSite: 'lax'
+    sameSite: 'lax',
+    path: '/'
   }
 }));
 
