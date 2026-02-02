@@ -120,6 +120,16 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
+// Health check endpoint with version info
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    version: '1.1.0-auto-refresh',
+    time: moment().format('YYYY-MM-DD HH:mm:ss'),
+    features: ['auto-refresh', 'fast-cleanup']
+  });
+});
+
 // API Routes
 app.use('/api', weeklyRoutes);
 app.use('/api', reservationLimiter, bookingRoutes);
