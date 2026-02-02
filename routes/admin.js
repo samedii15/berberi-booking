@@ -74,15 +74,26 @@ router.post('/hyrje', async (req, res) => {
     req.session.adminId = admin.id;
     req.session.username = admin.username;
 
-    console.log('Session created for admin:', admin.username);
-
-    res.json({
-      success: true,
-      message: 'U hyrt me sukses si administrator.',
-      admin: {
-        id: admin.id,
-        username: admin.username
+    // Save session explicitly
+    req.session.save((err) => {
+      if (err) {
+        console.error('Session save error:', err);
+        return res.status(500).json({
+          success: false,
+          error: 'Ka ndodhur një gabim gjatë ruajtjes së sesionit.'
+        });
       }
+
+      console.log('Session saved successfully for admin:', admin.username);
+
+      res.json({
+        success: true,
+        message: 'U hyrt me sukses si administrator.',
+        admin: {
+          id: admin.id,
+          username: admin.username
+        }
+      });
     });
 
   } catch (error) {
