@@ -305,6 +305,24 @@ class Database {
     });
   }
 
+  updateAdminCredentials(adminId, newUsername, newPasswordHash) {
+    return new Promise((resolve, reject) => {
+      const sql = `
+        UPDATE admin_users
+        SET username = ?, password_hash = ?
+        WHERE id = ?
+      `;
+
+      this.db.run(sql, [newUsername, newPasswordHash, adminId], function(err) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({ changes: this.changes });
+        }
+      });
+    });
+  }
+
   // Rest days management
   markDayAsRest(date) {
     return new Promise((resolve, reject) => {

@@ -112,6 +112,58 @@
                     </button>
                 </div>
 
+                <!-- Change Credentials -->
+                <div class="login-card" style="margin-bottom: 2rem;">
+                    <div class="login-header">
+                        <h2>🔐 Ndrysho Kredencialet</h2>
+                        <p>Ndrysho username ose fjalëkalimin e admin-it</p>
+                    </div>
+
+                    <form id="credentials-form" class="login-form">
+                        <div class="form-group">
+                            <label for="new-username">Username i ri</label>
+                            <input 
+                                type="text" 
+                                id="new-username" 
+                                name="new-username" 
+                                placeholder="Shkruaj username të ri"
+                                autocomplete="username"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="new-password">Fjalëkalimi i ri</label>
+                            <input 
+                                type="password" 
+                                id="new-password" 
+                                name="new-password" 
+                                placeholder="Shkruaj fjalëkalimin e ri"
+                                autocomplete="new-password"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirm-new-password">Konfirmo fjalëkalimin</label>
+                            <input 
+                                type="password" 
+                                id="confirm-new-password" 
+                                name="confirm-new-password" 
+                                placeholder="Përsërit fjalëkalimin"
+                                autocomplete="new-password"
+                                required
+                            >
+                        </div>
+                        
+                        <div id="credentials-message" class="login-message"></div>
+                        
+                        <button type="submit" class="btn-primary" id="credentials-submit">
+                            <span class="btn-text">Ruaj Ndryshimet</span>
+                        </button>
+                    </form>
+                </div>
+
                 <!-- Reservations by Day -->
                 <div id="reservations-container" class="reservations-container">
                     <!-- Content will be populated by JavaScript -->

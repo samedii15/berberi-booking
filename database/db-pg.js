@@ -161,6 +161,14 @@ class DatabasePG {
     return result.rows[0];
   }
 
+  async updateAdminCredentials(adminId, newUsername, newPasswordHash) {
+    const result = await this.pool.query(
+      'UPDATE admin_users SET username = $1, password_hash = $2 WHERE id = $3',
+      [newUsername, newPasswordHash, adminId]
+    );
+    return { changes: result.rowCount };
+  }
+
   // Rest days management
   async markDayAsRest(date) {
     const result = await this.pool.query(

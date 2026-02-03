@@ -122,6 +122,73 @@ router.post('/dil', (req, res) => {
   });
 });
 
+// POST /api/admin/ndrysho-kredenciale - Ndryshon username/fjalëkalim (admin)
+router.post('/ndrysho-kredenciale', requireAuth, async (req, res) => {
+  try {
+    const { newUsername, newPassword } = req.body;
+
+    if (!newUsername || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        error: 'Username dhe fjalëkalimi i ri janë të detyrueshëm.'
+      });
+    }
+
+    if (newUsername.trim().length < 3) {
+      return res.status(400).json({
+        success: false,
+        error: 'Username duhet të ketë së paku 3 karaktere.'
+      });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        error: 'Fjalëkalimi duhet të ketë së paku 6 karaktere.'
+      });
+    }
+
+    const existing = await database.getAdminByUsername(newUsername.trim());
+    if (existing && existing.id !== req.session.adminId) {
+      return res.status(409).json({
+        success: false,
+        error: 'Ky username është i zënë. Zgjidhni një tjetër.'
+      });
+    }
+
+    const hash = await bcrypt.hash(newPassword, 10);
+    const result = await database.updateAdminCredentials(
+      req.session.adminId,
+      newUsername.trim(),
+      hash
+    );
+
+    if (result.changes === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Nuk mund të përditësohen kredencialet. Provoni përsëri.'
+      });
+    }
+
+    req.session.username = newUsername.trim();
+
+    res.json({
+      success: true,
+      message: 'Kredencialet u përditësuan me sukses.',
+      admin: {
+        id: req.session.adminId,
+        username: req.session.username
+      }
+    });
+  } catch (error) {
+    console.error('Gabim në /api/admin/ndrysho-kredenciale:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Ka ndodhur një gabim gjatë ndryshimit të kredencialeve.'
+    });
+  }
+});
+
 // GET /api/admin/rezervimet - Lista e të gjitha rezervimeve të javës aktuale
 router.get('/rezervimet', requireAuth, async (req, res) => {
   try {

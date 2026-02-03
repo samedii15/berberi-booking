@@ -26,6 +26,12 @@ function initAdminPage() {
     if (loginForm) {
         loginForm.addEventListener('submit', handleLogin);
     }
+
+    // Setup credentials form
+    const credentialsForm = document.getElementById('credentials-form');
+    if (credentialsForm) {
+        credentialsForm.addEventListener('submit', handleChangeCredentials);
+    }
 }
 
 async function checkLoginStatus() {
@@ -40,6 +46,11 @@ async function checkLoginStatus() {
             document.getElementById('login-section').style.display = 'none';
             document.getElementById('back-btn').style.display = 'inline-flex';
             document.getElementById('logout-btn').style.display = 'inline-flex';
+
+            const usernameInput = document.getElementById('new-username');
+            if (usernameInput) {
+                usernameInput.value = adminData.username || '';
+            }
             
             // Load dashboard
             await loadDashboard();
@@ -93,6 +104,11 @@ async function handleLogin(e) {
             document.getElementById('login-section').style.display = 'none';
             document.getElementById('back-btn').style.display = 'inline-flex';
             document.getElementById('logout-btn').style.display = 'inline-flex';
+
+            const usernameInput = document.getElementById('new-username');
+            if (usernameInput) {
+                usernameInput.value = adminData.username || '';
+            }
             
             console.log('Loading dashboard...');
             
@@ -117,6 +133,71 @@ async function handleLogin(e) {
 
 function showLoginMessage(message, type = 'info') {
     const messageContainer = document.getElementById('login-message');
+    messageContainer.className = `login-message ${type}`;
+    messageContainer.textContent = message;
+    messageContainer.style.display = 'block';
+}
+
+async function handleChangeCredentials(e) {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('credentials-submit');
+    const messageContainer = document.getElementById('credentials-message');
+    const newUsername = document.getElementById('new-username').value.trim();
+    const newPassword = document.getElementById('new-password').value;
+    const confirmPassword = document.getElementById('confirm-new-password').value;
+    
+    // Clear previous messages
+    messageContainer.style.display = 'none';
+    messageContainer.className = 'login-message';
+    
+    if (newUsername.length < 3) {
+        showCredentialsMessage('Username duhet të ketë së paku 3 karaktere.', 'error');
+        return;
+    }
+    
+    if (newPassword.length < 6) {
+        showCredentialsMessage('Fjalëkalimi duhet të ketë së paku 6 karaktere.', 'error');
+        return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+        showCredentialsMessage('Fjalëkalimet nuk përputhen.', 'error');
+        return;
+    }
+    
+    // Show loading state
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<div class="spinner"></div> Duke ruajtur...';
+    submitBtn.disabled = true;
+    
+    try {
+        const response = await App.apiRequest('/api/admin/ndrysho-kredenciale', {
+            method: 'POST',
+            body: JSON.stringify({
+                newUsername,
+                newPassword
+            })
+        });
+        
+        if (response.success) {
+            showCredentialsMessage('Kredencialet u përditësuan me sukses.', 'success');
+            document.getElementById('new-password').value = '';
+            document.getElementById('confirm-new-password').value = '';
+        } else {
+            showCredentialsMessage(response.error || 'Ka ndodhur një gabim.', 'error');
+        }
+    } catch (error) {
+        console.error('Failed to update credentials:', error);
+        showCredentialsMessage('Ka ndodhur një gabim gjatë ruajtjes.', 'error');
+    } finally {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }
+}
+
+function showCredentialsMessage(message, type = 'info') {
+    const messageContainer = document.getElementById('credentials-message');
     messageContainer.className = `login-message ${type}`;
     messageContainer.textContent = message;
     messageContainer.style.display = 'block';
