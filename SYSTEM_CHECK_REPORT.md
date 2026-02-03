@@ -9,10 +9,10 @@
 
 ### Monday (E Hënë) Slots - January 26, 2026
 Currently booked slots:
-- 09:00-09:25 ✓ (Code: M3BPFS)
-- 09:25-09:50 ✓ (Code: MHOUMK)
-- 09:50-10:15 ✓ (Code: QRAQ88)
-- 13:25-13:50 ✓ (Code: Q9YSKH)
+- 09:00-09:30 ✓ (Code: M3BPFS)
+- 09:30-10:00 ✓ (Code: MHOUMK)
+- 10:00-10:30 ✓ (Code: QRAQ88)
+- 13:30-14:00 ✓ (Code: Q9YSKH)
 
 **All other Monday slots are available for booking!**
 
@@ -36,7 +36,7 @@ Currently booked slots:
 - ✅ Cleanup service (runs hourly, clears old weeks)
 
 ### Working Hours
-- **Monday - Saturday**: 09:00 - 20:00 (25-minute slots)
+- **Monday - Saturday**: 09:00 - 20:00 (30-minute slots)
 - **Sunday**: Closed
 
 ### Security

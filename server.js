@@ -41,8 +41,17 @@ app.use(express.json());
 app.use(express.static('public'));
 
 // Session configuration
+const sessionSecret = process.env.SESSION_SECRET || (process.env.NODE_ENV !== 'production'
+  ? 'berberi-secret-key-change-in-production'
+  : null);
+
+if (!sessionSecret) {
+  console.error('❌ SESSION_SECRET is required in production. Set it in the environment variables.');
+  process.exit(1);
+}
+
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'berberi-secret-key-change-in-production',
+  secret: sessionSecret,
   resave: false,
   saveUninitialized: false,
   proxy: true, // Trust the reverse proxy
@@ -160,7 +169,7 @@ app.get('/admin', (req, res) => {
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
-    version: '1.2.0-slot-filter-fixed',
+    version: '1.3.0-30min-slots',
     time: moment().format('YYYY-MM-DD HH:mm:ss'),
     features: ['auto-refresh', 'fast-cleanup', 'correct-slot-filtering']
   });

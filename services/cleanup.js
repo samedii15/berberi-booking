@@ -1,5 +1,7 @@
 const moment = require('moment-timezone');
-const database = require('../database/db');
+const database = process.env.DATABASE_URL 
+  ? require('../database/db-pg')
+  : require('../database/db');
 
 // Set default timezone to Europe/Tirane (Albania)
 moment.tz.setDefault('Europe/Tirane');
@@ -7,6 +9,7 @@ moment.tz.setDefault('Europe/Tirane');
 class CleanupService {
   constructor() {
     this.cleanupInterval = null;
+    this.debugSlots = process.env.DEBUG_SLOTS === 'true';
   }
 
   startWeeklyCleanup() {
@@ -70,8 +73,8 @@ class CleanupService {
         const currentHour = now.hour();
         const currentMinute = now.minute();
         
-        // Nëse është pas orës 19:35 (sloti i fundit fillon në 19:35), nuk ka më slot
-        if (currentHour > 19 || (currentHour === 19 && currentMinute >= 35)) {
+        // Nëse është pas orës 19:30 (sloti i fundit fillon në 19:30), nuk ka më slot
+        if (currentHour > 19 || (currentHour === 19 && currentMinute >= 30)) {
           hasAvailableSlots = false;
         }
       }
@@ -110,12 +113,14 @@ class CleanupService {
     const slots = [];
     const workStart = 9; // 09:00
     const workEnd = 20;   // 20:00
-    const slotDuration = 25; // 25 minuta
+    const slotDuration = 30; // 30 minuta
     const now = moment();
     const slotDate = moment(date);
     const isToday = slotDate.isSame(now, 'day');
 
-    console.log(`[SLOT GEN] Date: ${date}, Now: ${now.format('YYYY-MM-DD HH:mm')}, IsToday: ${isToday}`);
+    if (this.debugSlots) {
+      console.log(`[SLOT GEN] Date: ${date}, Now: ${now.format('YYYY-MM-DD HH:mm')}, IsToday: ${isToday}`);
+    }
 
     for (let hour = workStart; hour < workEnd; hour++) {
       for (let minute = 0; minute < 60; minute += slotDuration) {
@@ -132,7 +137,9 @@ class CleanupService {
         if (isToday) {
           // Fshi slot-in nëse ka përfunduar (ora e fundit ka kaluar)
           if (endTime.isSameOrBefore(now)) {
-            console.log(`[SKIP] ${startTime.format('HH:mm')}-${endTime.format('HH:mm')} ended before ${now.format('HH:mm')}`);
+            if (this.debugSlots) {
+              console.log(`[SKIP] ${startTime.format('HH:mm')}-${endTime.format('HH:mm')} ended before ${now.format('HH:mm')}`);
+            }
             continue; // Kapërce slot-et që kanë përfunduar
           }
         }

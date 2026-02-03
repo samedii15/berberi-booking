@@ -151,7 +151,13 @@ router.post('/ndrysho', async (req, res) => {
 
     // Kontrollo që data e re është brenda javës aktuale
     const weekData = cleanupService.getCurrentWeekDates();
-    const newDate = moment(new_date);
+    const newDate = moment(new_date, 'YYYY-MM-DD', true);
+    if (!newDate.isValid()) {
+      return res.status(400).json({
+        success: false,
+        error: 'Data është e pavlefshme. Përdorni formatin YYYY-MM-DD.'
+      });
+    }
     const weekStart = moment(weekData.startDate);
     const weekEnd = moment(weekData.endDate);
 
@@ -171,7 +177,39 @@ router.post('/ndrysho', async (req, res) => {
     }
 
     // Validim për orarin e punës
-    const timeSlot = moment(new_start_time, 'HH:mm');
+    const timeSlot = moment(new_start_time, 'HH:mm', true);
+    if (!timeSlot.isValid()) {
+      return res.status(400).json({
+        success: false,
+        error: 'Ora është e pavlefshme. Përdorni formatin HH:mm.'
+      });
+    }
+
+    // Kontrollo që dita e re nuk është pushim
+    const isRestDay = await database.isRestDay(new_date);
+    if (isRestDay) {
+      return res.status(400).json({
+        success: false,
+        error: 'Kjo ditë është e shënuar si ditë pushimi. Ju lutem zgjidhni një ditë tjetër.'
+      });
+    }
+
+    // Kontrollo që slot-i ekziston dhe nuk është i kaluar
+    const validSlots = cleanupService.generateDaySlots(new_date);
+    const isValidSlot = validSlots.some(slot => slot.startTime === new_start_time);
+    if (!isValidSlot) {
+      return res.status(400).json({
+        success: false,
+        error: 'Slot-i i ri nuk është i vlefshëm ose ka kaluar.'
+      });
+    }
+
+    if (originalReservation.date === new_date && originalReservation.start_time === new_start_time) {
+      return res.status(400).json({
+        success: false,
+        error: 'Keni zgjedhur të njëjtin slot. Ju lutem zgjidhni një slot tjetër.'
+      });
+    }
     if (timeSlot.hour() < 9 || timeSlot.hour() >= 20) {
       return res.status(400).json({
         success: false,
@@ -180,7 +218,7 @@ router.post('/ndrysho', async (req, res) => {
     }
 
     // Kalkulon end_time të ri
-    const newEndTime = timeSlot.clone().add(25, 'minutes').format('HH:mm');
+    const newEndTime = timeSlot.clone().add(30, 'minutes').format('HH:mm');
 
     // Kontrollo që slot-i i ri të jetë brenda orarit
     if (moment(newEndTime, 'HH:mm').hour() >= 20 && moment(newEndTime, 'HH:mm').minute() > 0) {

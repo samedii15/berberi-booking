@@ -6,7 +6,7 @@ Uebfaqe moderne për berber me rezervim terminesh online, 100% në gjuhën shqip
 
 - **Mobile-First**: 99% e optimizuar për telefona celularë
 - **Javor**: Kalendar që shfaq vetëm javën aktuale (Hënë-Shtunë)
-- **25 Minuta**: Slot-e rezervimi nga ora 09:00 deri 20:00 çdo 25 minuta
+- **30 Minuta**: Slot-e rezervimi nga ora 09:00 deri 20:00 çdo 30 minuta
 - **Pa Regjistrim**: Rezervim i thjeshtë me vetëm emër dhe mbiemër
 - **Kod Rezervimi**: Menaxhim rezervimi me kod unik (pa email)
 - **Auto-Cleanup**: Fshirja automatike e rezervimeve të vjetra çdo javë të re
@@ -73,7 +73,7 @@ TeBerberi/
 ## Rregullat e Biznesit
 
 1. **Orari i Punës**: 09:00-20:00, Hënë-Shtunë
-2. **Slot-e**: 25 minuta secili
+2. **Slot-e**: 30 minuta secili
 3. **Java Aktuale**: Vetëm rezervime për javën aktuale
 4. **Auto-Cleanup**: Çdo të Hënë fshihen rezervimet e javës së kaluar
 5. **Pa Email**: Sistema funksionon pa email/registrim

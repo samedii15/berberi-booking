@@ -162,6 +162,14 @@ router.get('/rezervimet', requireAuth, async (req, res) => {
       );
     });
 
+    const totalSlots = weekData.days.reduce((sum, day) => {
+      if (restDays.includes(day.date)) return sum;
+      return sum + cleanupService.generateDaySlots(day.date).length;
+    }, 0);
+
+    const activeReservations = reservations.filter(r => r.status === 'active');
+    const cancelledReservations = reservations.filter(r => r.status === 'cancelled');
+
     res.json({
       success: true,
       week: weekData,
@@ -169,10 +177,12 @@ router.get('/rezervimet', requireAuth, async (req, res) => {
       restDays: restDays,
       statistics: {
         totalReservations: reservations.length,
-        activeReservations: reservations.filter(r => r.status === 'active').length,
-        cancelledReservations: reservations.filter(r => r.status === 'cancelled').length,
-        totalSlots: weekData.days.length * 29, // 6 ditë × 29 slot-e për ditë
-        occupancyRate: Math.round((reservations.filter(r => r.status === 'active').length / (weekData.days.length * 29)) * 100)
+        activeReservations: activeReservations.length,
+        cancelledReservations: cancelledReservations.length,
+        totalSlots: totalSlots,
+        occupancyRate: totalSlots > 0
+          ? Math.round((activeReservations.length / totalSlots) * 100)
+          : 0
       }
     });
 

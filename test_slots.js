@@ -4,7 +4,7 @@ function generateDaySlots(date) {
   const slots = [];
   const workStart = 9;
   const workEnd = 20;
-  const slotDuration = 25;
+  const slotDuration = 30;
   const now = moment();
   const slotDate = moment(date);
   const isToday = slotDate.isSame(now, 'day');

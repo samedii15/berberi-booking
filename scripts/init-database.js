@@ -1,4 +1,6 @@
-const database = require('../database/db');
+const database = process.env.DATABASE_URL 
+  ? require('../database/db-pg')
+  : require('../database/db');
 
 async function initializeDatabase() {
   try {

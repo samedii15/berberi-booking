@@ -3,9 +3,9 @@ const https = require('https');
 class TelegramNotification {
   constructor() {
     // Vendos këtu TOKEN-in e bot-it tënd dhe CHAT_ID
-    this.botToken = process.env.TELEGRAM_BOT_TOKEN || '7677035299:AAHPIdMwnOTTe-mLgT5fA0WyEi4RkTUcD2Y';
-    this.chatId = process.env.TELEGRAM_CHAT_ID || '8548886492';
-    this.enabled = this.botToken !== 'YOUR_BOT_TOKEN_HERE' && this.chatId !== 'YOUR_CHAT_ID_HERE';
+    this.botToken = process.env.TELEGRAM_BOT_TOKEN || '';
+    this.chatId = process.env.TELEGRAM_CHAT_ID || '';
+    this.enabled = Boolean(this.botToken && this.chatId);
   }
 
   sendMessage(message) {

@@ -75,7 +75,7 @@ if (passed === checks) {
 console.log('\n📝 Key Features Implemented:');
 console.log('• Mobile-first responsive design');
 console.log('• Albanian language interface');
-console.log('• 25-minute time slots (9:00-20:00)');
+console.log('• 30-minute time slots (9:00-20:00)');
 console.log('• Weekly calendar (Mon-Sat, auto-cleanup)');
 console.log('• No-registration booking (name only)');
 console.log('• Unique reservation codes');

@@ -69,7 +69,7 @@
 
    👤 Emri: Test User
    📅 Data: 03 Shkurt 2026
-   🕐 Ora: 09:00 - 09:25
+   🕐 Ora: 09:00 - 09:30
    🔑 Kodi: ABC123
 
    ✂️ Berberi - Sistem Rezervimi
@@ -106,7 +106,7 @@ NGA:
 
 NË:
 📅 04 Shkurt 2026
-🕐 10:00 - 10:25
+🕐 10:00 - 10:30
 
 🔑 Kodi: XYZ789
 ```

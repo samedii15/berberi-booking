@@ -462,8 +462,5 @@ function showErrorState(message) {
 }
 
 // Make functions globally available for onclick handlers
-window.confirmReservation = confirmReservation;
-window.closeModal = closeModal;
-window.resetAndGoHome = resetAndGoHome;
 window.copyCode = copyCode;
 window.closeSuccessModal = closeSuccessModal;

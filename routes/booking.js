@@ -30,7 +30,13 @@ router.post('/rezervo', async (req, res) => {
 
     // Kontrollo që data është brenda javës aktuale
     const weekData = cleanupService.getCurrentWeekDates();
-    const requestedDate = moment(date);
+    const requestedDate = moment(date, 'YYYY-MM-DD', true);
+    if (!requestedDate.isValid()) {
+      return res.status(400).json({
+        success: false,
+        error: 'Data është e pavlefshme. Përdorni formatin YYYY-MM-DD.'
+      });
+    }
     const weekStart = moment(weekData.startDate);
     const weekEnd = moment(weekData.endDate);
 
@@ -50,16 +56,41 @@ router.post('/rezervo', async (req, res) => {
     }
 
     // Kontrollo që ora është brenda orarit të punës
-    const timeSlot = moment(start_time, 'HH:mm');
-    if (timeSlot.hour() < 8 || timeSlot.hour() >= 20) {
+    const timeSlot = moment(start_time, 'HH:mm', true);
+    if (!timeSlot.isValid()) {
+      return res.status(400).json({
+        success: false,
+        error: 'Ora është e pavlefshme. Përdorni formatin HH:mm.'
+      });
+    }
+
+    // Kontrollo që dita nuk është pushim
+    const isRestDay = await database.isRestDay(date);
+    if (isRestDay) {
+      return res.status(400).json({
+        success: false,
+        error: 'Kjo ditë është e shënuar si ditë pushimi. Ju lutem zgjidhni një ditë tjetër.'
+      });
+    }
+
+    // Kontrollo që slot-i ekziston dhe nuk është i kaluar
+    const validSlots = cleanupService.generateDaySlots(date);
+    const isValidSlot = validSlots.some(slot => slot.startTime === start_time);
+    if (!isValidSlot) {
+      return res.status(400).json({
+        success: false,
+        error: 'Slot-i i zgjedhur nuk është i vlefshëm ose ka kaluar.'
+      });
+    }
+    if (timeSlot.hour() < 9 || timeSlot.hour() >= 20) {
       return res.status(400).json({
         success: false,
         error: 'Orari i punës është nga 09:00 deri në 20:00.'
       });
     }
 
-    // Kalkulon end_time (25 minuta më vonë)
-    const endTime = timeSlot.clone().add(25, 'minutes').format('HH:mm');
+    // Kalkulon end_time (30 minuta më vonë)
+    const endTime = timeSlot.clone().add(30, 'minutes').format('HH:mm');
 
     // Kontrollo që slot-i të jetë brenda orarit
     if (moment(endTime, 'HH:mm').hour() >= 20 && moment(endTime, 'HH:mm').minute() > 0) {
